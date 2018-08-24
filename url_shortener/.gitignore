@@ -1,0 +1,8 @@
+*.pyc
+.idea
+__pycache__
+/url_shortener/env_settings.py
+*.rdb
+./mc
+.DS_Store
+/shortener/.DS_Store
