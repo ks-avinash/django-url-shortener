@@ -2,18 +2,16 @@
 import json
 import random
 import string
+
 import tldextract
 from django.conf import settings
+from django.db.models import Q
 from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 from django.shortcuts import get_object_or_404
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view
-from django.core.serializers import serialize
-# from django.core import serializers
-from django.http import JsonResponse
-from django.db.models import Q
-import csv
+
 from shortener.models import ShortURL
 
 
@@ -139,4 +137,3 @@ def read_urls_csv(request):
 
     response = {'status': 'success', 'converted urls': converted_urls}
     return HttpResponse(json.dumps(response), content_type='application/json', status=200)
-
