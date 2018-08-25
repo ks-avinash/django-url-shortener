@@ -59,7 +59,7 @@ def shorten_url(request):
 
 
 @csrf_exempt
-@api_view(['POST'])
+@api_view(['GET'])
 def shortened_urls_list(request):
     all_short_urls = ShortURL.objects.values_list('shortened_url', flat=True)
 
