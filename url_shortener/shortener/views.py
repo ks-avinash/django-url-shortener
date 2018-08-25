@@ -13,7 +13,7 @@ from django.core.serializers import serialize
 # from django.core import serializers
 from django.http import JsonResponse
 from django.db.models import Q
-
+import csv
 from shortener.models import ShortURL
 
 
@@ -110,5 +110,33 @@ def delete_shortened_url(request):
     else:
         response = {'status': 'error', 'message': 'short url not exists to remove'}
 
+    return HttpResponse(json.dumps(response), content_type='application/json', status=200)
+
+
+@csrf_exempt
+@api_view(['POST'])
+def read_urls_csv(request):
+    try:
+        file = request.FILES['csv_file']
+    except KeyError as e:
+        response = {'status': "error", 'message': 'error occurs'}
+        return HttpResponse(json.dumps(response), 'application/json', status=400)
+    decoded_file = file.read().decode('utf-8').splitlines()
+    converted_urls = []
+    for url in decoded_file:
+        extracted = tldextract.extract(url)
+        domain = "{}.{}".format(extracted.domain, extracted.suffix)
+        url_present = ShortURL.objects.filter(Q(url=url) | Q(url__endswith=domain))
+        if url_present:
+            short_url = url_present.shortened_url
+            converted_urls.append(short_url)
+        else:
+            u_id = get_short_code()
+            short_url = settings.SITE_URL + "/" + u_id
+            b = ShortURL(url=url, unique_id=u_id, shortened_url=short_url)
+            b.save()
+            converted_urls.append(short_url)
+
+    response = {'status': 'success', 'converted urls': converted_urls}
     return HttpResponse(json.dumps(response), content_type='application/json', status=200)
 
