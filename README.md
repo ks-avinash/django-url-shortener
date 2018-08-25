@@ -27,7 +27,7 @@ https://google.com
 
 https://www.google.com
 
-Support uploading '.csv' file containing urls and show the shortened urls for each
+Its support uploading '.csv' file containing urls and show the shortened urls for each
 
 Postman Collection for Above Operations(REST API endpoints)
 
