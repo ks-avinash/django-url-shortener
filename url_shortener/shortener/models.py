@@ -1,9 +1,6 @@
 from django.db import models
 
 
-# Create your models here.
-
-
 class ShortURL(models.Model):
     url = models.URLField(max_length=200)
     unique_id = models.SlugField(max_length=6, primary_key=True, blank=True)

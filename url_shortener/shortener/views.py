@@ -15,7 +15,7 @@ from rest_framework.decorators import api_view
 from shortener.models import ShortURL
 
 
-def get_short_code():
+def get_unique_string():
     length = 6
     char = string.ascii_uppercase + string.digits + string.ascii_lowercase
     while True:
@@ -36,7 +36,7 @@ def redirect_original(request, short_id):
 
 @csrf_exempt
 @api_view(['POST'])
-def shorten_url(request):
+def get_shortened_url(request):
     try:
         params = json.loads(request.body.decode('utf-8'))
         url = params['url']
@@ -46,11 +46,11 @@ def shorten_url(request):
 
     extracted = tldextract.extract(url)
     domain = "{}.{}".format(extracted.domain, extracted.suffix)
-    url_present = ShortURL.objects.get(Q(url=url) | Q(url__endswith=domain))
-    if url_present:
-        short_url = url_present.shortened_url
-    else:
-        u_id = get_short_code()
+    try:
+        url_object = ShortURL.objects.get(Q(url=url) | Q(url__endswith=domain))
+        short_url = url_object.shortened_url
+    except ShortURL.DoesNotExist:
+        u_id = get_unique_string()
         short_url = settings.SITE_URL + "/" + u_id
         b = ShortURL(url=url, unique_id=u_id, shortened_url=short_url)
         b.save()
@@ -124,12 +124,13 @@ def read_urls_csv(request):
     for url in decoded_file:
         extracted = tldextract.extract(url)
         domain = "{}.{}".format(extracted.domain, extracted.suffix)
-        url_present = ShortURL.objects.filter(Q(url=url) | Q(url__endswith=domain))
-        if url_present:
-            short_url = url_present.shortened_url
+
+        try:
+            url_object = ShortURL.objects.get(Q(url=url) | Q(url__endswith=domain))
+            short_url = url_object.shortened_url
             converted_urls.append(short_url)
-        else:
-            u_id = get_short_code()
+        except ShortURL.DoesNotExist:
+            u_id = get_unique_string()
             short_url = settings.SITE_URL + "/" + u_id
             b = ShortURL(url=url, unique_id=u_id, shortened_url=short_url)
             b.save()
