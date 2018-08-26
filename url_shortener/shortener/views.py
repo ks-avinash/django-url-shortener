@@ -26,7 +26,7 @@ def get_unique_string():
         except:
             return random_string
 
-
+@csrf_exempt
 def redirect_original(request, short_id):
     short_url = get_object_or_404(ShortURL, pk=short_id)
     short_url.count += 1

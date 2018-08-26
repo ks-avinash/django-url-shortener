@@ -10,3 +10,6 @@ class ShortURL(models.Model):
 
     def __str__(self):
         return str(self.url)
+
+    def __unicode__(self):
+        return str(self.url)
